@@ -16,7 +16,7 @@ void print_m512(__m512 vec) {
 
 int main() {
   const int N = 8;
-  float x[N], y[N], m[N], fx[N], fy[N], array[2*N], brray[N], irray[N];
+  float x[N], y[N], m[N], fx[N], fy[N], array[2*N];
   for(int i=0; i<N; i++) {
     x[i] = drand48();
     y[i] = drand48();
@@ -32,9 +32,6 @@ int main() {
     
 	__m512 avec = _mm512_load_ps(array);   
         __m512 bvec = _mm512_setzero_ps();
-	__m512 ivec = _mm512_set1_ps(i);
-        __mmask16 mask = _mm512_cmp_ps_mask(avec, ivec, _MM_CMPINT_NE);
-	__mmask16 mask2 = _mm512_cmp_ps_mask(avec, bvec, _MM_CMPINT_GE);
         __m512 xjvec = _mm512_load_ps(x);
 	__m512 xivec = _mm512_set1_ps(x[i]);
 	__m512 yjvec = _mm512_load_ps(y);
@@ -47,9 +44,10 @@ int main() {
 	__m512 ry2vec = _mm512_mul_ps(ryvec, ryvec);
 	__m512 rvec = _mm512_add_ps(rx2vec, ry2vec);
 	
-	rvec = _mm512_rsqrt14_ps(rvec);
-	ivec = _mm512_set1_ps(1);
-	rvec = _mm512_div_ps(ivec, rvec);
+	//rvec = _mm512_rsqrt14_ps(rvec);
+	__m512 ivec = _mm512_set1_ps(1);
+	//rvec = _mm512_div_ps(ivec, rvec);
+	rvec = _mm512_sqrt_ps(rvec);
 	__m512 r2vec  = _mm512_mul_ps(rvec, rvec);
 	rvec = _mm512_mul_ps(rvec, r2vec);
 
@@ -59,6 +57,11 @@ int main() {
 	
 	rxvec = _mm512_div_ps(rxvec, rvec);
 	ryvec = _mm512_div_ps(ryvec, rvec);
+
+	//If-statement + remove extra values
+	ivec = _mm512_set1_ps(i);
+        __mmask16 mask = _mm512_cmp_ps_mask(avec, ivec, _MM_CMPINT_NE);
+	__mmask16 mask2 = _mm512_cmp_ps_mask(avec, bvec, _MM_CMPINT_GE);
 	rxvec = _mm512_mask_blend_ps(mask, bvec, rxvec);
 	ryvec = _mm512_mask_blend_ps(mask, bvec, ryvec);
 	rxvec = _mm512_mask_blend_ps(mask2, bvec, rxvec);
