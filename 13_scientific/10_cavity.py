@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 nx = 41
 ny = 41
-nt = 500
+nt = 50
 nit = 50
 dx = 2 / (nx - 1)
 dy = 2 / (ny - 1)
@@ -53,6 +53,7 @@ for n in range(nt):
                                - dt / (2 * rho * dx) * (p[j+1, i] - p[j-1, i])\
                                + nu * dt / dx**2 * (vn[j, i+1] - 2 * vn[j, i] + vn[j, i-1])\
                                + nu * dt / dy**2 * (vn[j+1, i] - 2 * vn[j, i] + vn[j-1, i])
+    print(v[20, 2])                           
     u[0, :]  = 0
     u[:, 0]  = 0
     u[:, -1] = 0
@@ -61,8 +62,9 @@ for n in range(nt):
     v[-1, :] = 0
     v[:, 0]  = 0
     v[:, -1] = 0
-    plt.contourf(X, Y, p, alpha=0.5, cmap=plt.cm.coolwarm)
-    plt.quiver(X[::2, ::2], Y[::2, ::2], u[::2, ::2], v[::2, ::2])
-    plt.pause(.01)
-    plt.clf()
-plt.show()
+#    plt.contourf(X, Y, p, alpha=0.5, cmap=plt.cm.coolwarm)
+#    plt.quiver(X[::2, ::2], Y[::2, ::2], u[::2, ::2], v[::2, ::2])
+#    plt.pause(.01)
+#    plt.clf()
+    
+#plt.show()
