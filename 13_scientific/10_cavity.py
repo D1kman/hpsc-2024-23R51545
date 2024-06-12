@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 nx = 41
 ny = 41
-nt = 50
+nt = 5
 nit = 50
 dx = 2 / (nx - 1)
 dy = 2 / (ny - 1)
@@ -27,6 +27,8 @@ for n in range(nt):
                     ((u[j, i+1] - u[j, i-1]) / (2 * dx) + (v[j+1, i] - v[j-1, i]) / (2 * dy)) -\
                     ((u[j, i+1] - u[j, i-1]) / (2 * dx))**2 - 2 * ((u[j+1, i] - u[j-1, i]) / (2 * dy) *\
                      (v[j, i+1] - v[j, i-1]) / (2 * dx)) - ((v[j+1, i] - v[j-1, i]) / (2 * dy))**2)
+
+                    
     for it in range(nit):
         pn = p.copy()
         for j in range(1, ny-1):
@@ -53,6 +55,8 @@ for n in range(nt):
                                - dt / (2 * rho * dx) * (p[j+1, i] - p[j-1, i])\
                                + nu * dt / dx**2 * (vn[j, i+1] - 2 * vn[j, i] + vn[j, i-1])\
                                + nu * dt / dy**2 * (vn[j+1, i] - 2 * vn[j, i] + vn[j-1, i])
+                               
+    
     print(v[20, 2])                           
     u[0, :]  = 0
     u[:, 0]  = 0

@@ -2,11 +2,25 @@
 #include <math.h>
 #include <iostream>
 using namespace std;
+
+
+
+__global__ void calculate() {
+	int id = blockIdx.x * blockDim.x + threadIdx.x;
+	int j = id / ny;
+	int i = id % nx;
+	b[j][i] = rho * ((1 / dt) * ((u[j][i+1] - u[j][i-1]) / (2 * dx) + (v[j+1][i] - v[j-1][i]) / (2 * dy)) - pow(((u[j][i+1] -\
+	u[j][i-1]) / (2 * dx)),2) - 2 * (((u[j+1][i] - u[j-1][i]) / (2 * dy)) * (v[j][i+1] - v[j][i-1]) / (2 * dx)) - pow(((v[j+1][i] - v[j-1][i]) / (2 * dy)),2));
+
+}
+
+
+
+
 int main() {
 	const int nx = 41;
        	const int ny = 41;
-	const int nt = 5;
-	double test = 0;
+	const int nt = 50;
 	const int nit = 50;
 	const double dx = 2.0 / (nx - 1);
 	const double dy = 2.0 / (ny-1);
@@ -15,12 +29,21 @@ int main() {
 	const double nu = 0.02;
 	double x[nx];
 	double y[ny];
-	double u[nx][ny] = {0};
-	double v[nx][ny] = {0};
-	double p[nx][ny] = {0};
-	double b[nx][ny] = {0};
+	double* u; cudaMallocManaged(&u, nx*ny*sizeof(double));
+	double* v; cudaMallocManaged(&v, nx*ny*sizeof(double));
+	double* p; cudaMallocManaged(&p, nx*ny*sizeof(double));
+	double* b; cudaMallocManaged(&b, nx*ny*sizeof(double));
+	double* un; cudaMallocManaged(&un, nx*ny*sizeof(double));
+	double* vn; cudaMallocManaged(&vn, nx*ny*sizeof(double));
+	double* pn; cudaMallocManaged(&pn, nx*ny*sizeof(double));
+	const int M = 1024;
+	const int N = (nx-2)*(ny-2);
+	
+	
 
-	double pn[41][41],  un[41][41],  vn[41][41] = {};
+	
+
+
 	for (int i = 0; i <nx; i++) {
 		x[i] = i * 0.05;
 		y[i] = i * 0.05;
@@ -35,7 +58,6 @@ int main() {
 			}
 		}
 
-		printf("%f wango\n", b[9][31]);	
 		for (int it = 0; it < nit; it++) {
 			for (int p1 = 0; p1 < nx; p1++) {
 				for (int p2 = 0; p2 < ny; p2++) {
@@ -76,7 +98,7 @@ int main() {
                                + nu * dt / pow(dy,2) * (vn[j+1][i] - 2 * vn[j][i] + vn[j-1][i]);
 			}
 		}
-printf("%34.30f \n", v[20][2]);	
+	
 		for (int row = 0; row < nx; row++) {
 			u[0][row] = u[row][0] = u[row][ny-1] = 0;
 			u[nx-1][row] = 1;
