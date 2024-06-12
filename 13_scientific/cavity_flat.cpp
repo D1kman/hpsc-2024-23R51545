@@ -1,11 +1,12 @@
 #include <cstdio>
 #include <math.h>
 #include <iostream>
+#include <fstream>
 using namespace std;
 int main() {
 	const int nx = 41;
        	const int ny = 41;
-	const int nt = 5;
+	const int nt = 50;
 	const int nit = 50;
 	const double dx = 2.0 / (nx - 1);
 	const double dy = 2.0 / (ny-1);
@@ -25,6 +26,11 @@ int main() {
 		x[i] = i * 0.05;
 		y[i] = i * 0.05;
 	}
+
+	  ofstream ufile("u.dat");
+	  ofstream vfile("v.dat");
+	  ofstream pfile("p.dat");
+
 	
 	for (int n = 0; n < nt; n++) {
 
@@ -153,6 +159,26 @@ int main() {
 			v[0][row] = v[nx-1][row] = v[row][0] = v[row][ny-1] = 0;
 		}
 */	
+		   if (n % 10 == 0) {
+      for (int j=0; j<ny; j++)
+        for (int i=0; i<nx; i++)
+          ufile << u[j*ny+i] << " ";
+      ufile << "\n";
+      for (int j=0; j<ny; j++)
+        for (int i=0; i<nx; i++)
+          vfile << v[(j*ny)+i] << " ";
+      vfile << "\n";
+      for (int j=0; j<ny; j++)
+        for (int i=0; i<nx; i++)
+          pfile << p[j*ny+i] << " ";
+      pfile << "\n";
+		   }
+  
 	}
+  ufile.close();
+  vfile.close();
+  pfile.close();
+
+
 
 }
