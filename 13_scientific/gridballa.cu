@@ -19,10 +19,11 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 
 	if (j != 0 && j != ny-1 && i != 0 && i != nx-1) {
 		b[ji] = rho*((1/dt) * ((u[ip] - u[im]) / (2*dx) + (v[jp] - v[jm]) / (2*dy)) - pow(((u[ip]-u[im]) /\
-						(2*dx)), 2) - 2*(((u[jp] - u[jm]) / (2*dy)) * (v[ip] - v[im]) / (2*dx)) - pow(((v[jp] - v[jm]) / (2*dy)),2));
+			(2*dx)), 2) - 2*(((u[jp] - u[jm]) / (2*dy)) * (v[ip] - v[im]) / (2*dx)) - pow(((v[jp] - v[jm]) / (2*dy)),2));
+		
 	}
 //	if (threadIdx.x == 39) b[ji] = 0;
-//	if (blockIdx.x == 8){
+//	if (blockIdx.x == 39){
 //	       	printf("b: %f uip: %f uim: %f ujp: %f ujm: %f vip: %f vim: %f vjp %f vjm %f id: %d |  ", b[ji], u[ip], u[im], u[jp], u[jm], v[ip], v[im], v[jp], v[jm], i);
 	//	printf("u: %f ", u[ji]);
 //}
@@ -92,8 +93,8 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 int main() {
 	const int nx = 41;
 	const int ny = 41;
-	const int nt = 500;
-	const int nit = 50;
+	const int nt = 5;
+	const int nit = 120;
 	const double dx = 2.0 / (nx - 1);
 	const double dy = 2.0 / (ny-1);
 	const double dt = 0.01;
