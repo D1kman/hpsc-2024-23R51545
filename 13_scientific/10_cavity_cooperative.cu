@@ -20,11 +20,7 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 			(2*dx)), 2) - 2*(((u[jp] - u[jm]) / (2*dy)) * (v[ip] - v[im]) / (2*dx)) - pow(((v[jp] - v[jm]) / (2*dy)),2));
 		
 	}
-//	if (threadIdx.x == 39) b[ji] = 0;
-//	if (blockIdx.x == 39){
-//	       	printf("b: %f uip: %f uim: %f ujp: %f ujm: %f vip: %f vim: %f vjp %f vjm %f id: %d |  ", b[ji], u[ip], u[im], u[jp], u[jm], v[ip], v[im], v[jp], v[jm], i);
-	//	printf("u: %f ", u[ji]);
-//}
+
 	grid.sync();
 
 	for (int it = 0; it < nit; it++) {
@@ -42,14 +38,7 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 		p[j*ny] = p[(j*ny)+1];
 		p[(ny * (nx-1))+i] = 0.0;
 		grid.sync(); 
-
-/*		
-		if (i == nx-1) p[ji] = p[ji-1];
-		if (i == 0) p[ji] = p[ji+1];
-		if (j == ny-1) p[ji] = 0.0;
-		if (j == 0) p[ji] = p[ji +ny];
-		grid.sync();
-*/
+ 
 		}
 	un[ji] = u[ji];
 	vn[ji] = v[ji];
@@ -64,28 +53,11 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
                                 (p[jp] - p[jm]) + nu * dt / pow(dx,2) * (vn[ip] - 2 * vn[ji] + vn[im]) + nu * dt / pow(dy,2) *\
                                 (vn[jp] - 2 * vn[ji] + vn[jm]);
         }
-
-
-	
-
 	grid.sync();
-
 
 	u[i] = u[j*ny] = u[j*ny +(ny-1)] = 0.0;
 	u[ny*(nx-1) + i] = 1.0;
 	v[i] = v[ny*(nx-1)+i] = v[j*ny] = v[j*ny + (ny-1)] = 0.0;
-
-/*	
-	if (j == 0 || j == ny-1 || i == 0 || i == nx-1) {
-		if (j != ny-1) u[ji] = 0.0;
-		
-		else u[ji] = 1.0;
-
-		v[ji] = 0.0;
-	}
-*/
-	//		if (blockIdx.x == 39) printf("%f ", v[ji]);
-
 }
 
 
@@ -120,8 +92,7 @@ int main() {
 	ofstream pfile("p.dat");
 
 	for (int n = 0; n < nt; n++) {
-		//		cal<<<nx,ny>>>(u, v, p, b, un, vn, pn, nx, ny, nit, dx, dy, dt, rho, nu);
-		void *args[] = {(void *)&u, (void *)&v, (void *)&p, (void *)&b, (void *)&un, (void *)&vn, (void *)&pn, (void *)&nx, (void *)&ny, (void *)&nit, \
+		void *args[] = {(void *)&u, (void *)&v, (void *)&p, (void *)&b, (void *)&un, (void *)&vn, (void *)&pn, (void *)&nx, (void *)&ny, (void *)&nit,\
 			(void *)&dx, (void *)&dy, (void *)&dt, (void *)&rho, (void *)&nu};
 		cudaLaunchCooperativeKernel((void*)cal, nx, ny, args);
 
