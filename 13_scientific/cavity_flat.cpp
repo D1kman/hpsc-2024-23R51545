@@ -6,7 +6,7 @@ using namespace std;
 int main() {
 	const int nx = 41;
        	const int ny = 41;
-	const int nt = 50;
+	const int nt = 500;
 	const int nit = 50;
 	const double dx = 2.0 / (nx - 1);
 	const double dy = 2.0 / (ny-1);
