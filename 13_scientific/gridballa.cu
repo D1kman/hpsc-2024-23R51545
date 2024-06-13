@@ -6,7 +6,7 @@
 using namespace cooperative_groups;
 using namespace std;
 
-__global__ void cal(double *u, double *v, double *p, double *b, double *un, double *vn, double *pn, int nx, int ny, int nit, double dx, double dy, double dt, int rho, double nu) {
+__global__ void cal(double *u, double *v, double *p, double *b, double *un, double *vn, double *pn, int nx, int ny, int nit, double dx, double dy, double dt, double rho, double nu) {
 	int j = blockIdx.x;
 	int i = threadIdx.x;
 	int jp = (j+1)*ny+i;
@@ -15,12 +15,17 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 	int im = j*ny +(i-1);
 	int ji = j*ny +i;
 	grid_group grid = this_grid();	
-	//        for (int n = 0; n < nt; n++) {
+//	        for (int n = 0; n < nt; n++) {
 
 	if (j != 0 && j != ny-1 && i != 0 && i != nx-1) {
 		b[ji] = rho*((1/dt) * ((u[ip] - u[im]) / (2*dx) + (v[jp] - v[jm]) / (2*dy)) - pow(((u[ip]-u[im]) /\
 						(2*dx)), 2) - 2*(((u[jp] - u[jm]) / (2*dy)) * (v[ip] - v[im]) / (2*dx)) - pow(((v[jp] - v[jm]) / (2*dy)),2));
 	}
+//	if (threadIdx.x == 39) b[ji] = 0;
+//	if (blockIdx.x == 8){
+//	       	printf("b: %f uip: %f uim: %f ujp: %f ujm: %f vip: %f vim: %f vjp %f vjm %f id: %d |  ", b[ji], u[ip], u[im], u[jp], u[jm], v[ip], v[im], v[jp], v[jm], i);
+	//	printf("u: %f ", u[ji]);
+//}
 	grid.sync();
 
 	for (int it = 0; it < nit; it++) {
@@ -41,7 +46,7 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 */
 		if (i == nx-1) p[ji] = p[ji-1];
 		if (i == 0) p[ji] = p[ji+1];
-		if (j == ny-1) p[ji] = p[ji-ny];
+		if (j == ny-1) p[ji] = 0.0;
 		if (j == 0) p[ji] = p[ji +ny];
 		grid.sync();
 		}
@@ -70,16 +75,16 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 */
 	
 	if (j == 0 || j == ny-1 || i == 0 || i == nx-1) {
-		if (i == nx-1) u[ji] = 1.0;
+		if (j == ny-1) u[ji] = 1.0;
 		else u[ji] = 0.0;
 
 		v[ji] = 0.0;
 	}
-
+	
 	//		if (blockIdx.x == 39) printf("%f ", v[ji]);
 
 
-	//	}
+//		}
 
 }
 
@@ -92,7 +97,7 @@ int main() {
 	const double dx = 2.0 / (nx - 1);
 	const double dy = 2.0 / (ny-1);
 	const double dt = 0.01;
-	const int rho = 1;
+	const double rho = 1.0;
 	const double nu = 0.02;
 	double* u; cudaMallocManaged(&u, nx*ny*sizeof(double));
 	double* v; cudaMallocManaged(&v, nx*ny*sizeof(double));
@@ -117,7 +122,7 @@ int main() {
 	for (int n = 0; n < nt; n++) {
 		//		cal<<<nx,ny>>>(u, v, p, b, un, vn, pn, nx, ny, nit, dx, dy, dt, rho, nu);
 		void *args[] = {(void *)&u, (void *)&v, (void *)&p, (void *)&b, (void *)&un, (void *)&vn, (void *)&pn, (void *)&nx, (void *)&ny, (void *)&nit, \
-			(void *)&dx, (void *)&dy, (void *)&dt, (void *)&rho, (void *)&nu };
+			(void *)&dx, (void *)&dy, (void *)&dt, (void *)&rho, (void *)&nu};
 		cudaLaunchCooperativeKernel((void*)cal, nx, ny, args);
 
 		cudaDeviceSynchronize();

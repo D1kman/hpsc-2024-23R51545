@@ -6,7 +6,7 @@ using namespace std;
 int main() {
 	const int nx = 41;
        	const int ny = 41;
-	const int nt = 500;
+	const int nt = 5;
 	const int nit = 50;
 	const double dx = 2.0 / (nx - 1);
 	const double dy = 2.0 / (ny-1);
@@ -42,7 +42,9 @@ int main() {
 				b[j] = rho*((1/dt) * ((u[j+1] - u[j-1]) / (2*dx) + (v[j+nx] - v[j-nx]) / (2*dy)) - pow(((u[j+1]-u[j-1]) / (2*dx)), 2) -\
 				2*(((u[j+nx] - u[j-nx]) / (2*dy)) * (v[j+1] - v[j-1]) / (2*dx)) - pow(((v[j+nx] - v[j-nx]) / (2*dy)),2));
 			}
+			if (j > (ny*(ny-3)) && j < (ny*(ny-2)))printf("b: %f uip: %f uim: %f ujp: %f ujm: %f vip: %f vim: %f vjp %f vjm %f id: %d |  ", b[j], u[j+1], u[j-1], u[j+nx], u[j-nx], v[j+1], v[j-1], v[j+nx], v[j-nx], j%ny);
 		}
+		
 
 
 		for (int it = 0; it < nit; it++) {
