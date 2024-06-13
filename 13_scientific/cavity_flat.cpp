@@ -35,10 +35,10 @@ int main() {
 	for (int n = 0; n < nt; n++) {
 
 		for (int j = ny; j < (nx-1)*(ny); j++){
-			if (j % ny == 0 || j % ny == 40) {
+			if (j % ny != 0 && j % ny != 40) {
 				
-			}
-			else {
+			
+			
 				b[j] = rho*((1/dt) * ((u[j+1] - u[j-1]) / (2*dx) + (v[j+nx] - v[j-nx]) / (2*dy)) - pow(((u[j+1]-u[j-1]) / (2*dx)), 2) -\
 				2*(((u[j+nx] - u[j-nx]) / (2*dy)) * (v[j+1] - v[j-1]) / (2*dx)) - pow(((v[j+nx] - v[j-nx]) / (2*dy)),2));
 			}
@@ -53,10 +53,10 @@ int main() {
 			}
 
 			for(int j = ny; j < (nx-1)*(ny); j++){
-				if (j % ny == 0 || j % ny == 40) {
+				if (j % ny != 0 && j % ny != 40) {
 					
-				}
-				else {
+				
+				
 				p[j] = (pow(dy,2) * (pn[j+1] + pn[j-1]) + pow(dx,2) * (pn[j+nx] + pn[j-nx]) - b[j] * pow(dx,2) * pow(dy,2)) / (2*(pow(dx,2) + pow(dy,2)));
 				}	
 			}
@@ -74,10 +74,10 @@ int main() {
 			vn[row] = v[row];	
 		}
 		for (int j = ny; j < (nx-1)*(ny); j++) {
-			if (j % ny == 0 || j % ny == 40) {
+			if (j % ny != 0 && j % ny != 40) {
 
-                         }
-                        else {
+                         
+                        
 				u[j] = un[j] - un[j] * dt / dx * (un[j] - un[j-1]) - vn[j] * dt / dy * (un[j] - un[j-ny]) - dt / (2*rho*dx) *\
 				(p[j+1] - p[j-1]) + nu * dt / pow(dx,2) * (un[j+1] - 2 * un[j] + un[j-1]) + nu * dt / pow(dy,2) *\
 				(un[j+ny] - 2 * un[j] + un[j-ny]);
