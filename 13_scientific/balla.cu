@@ -12,11 +12,11 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 	int ip = j*ny+(i+1);
 	int im = j*ny +(i-1);
 	int ji = j*ny +i;	
-  //      for (int n = 0; n < nt; n++) {
+//        for (int n = 0; n < nt; n++) {
 		
 		if (j != 0 && j != ny-1 && i != 0 && i != nx-1) {
         		b[ji] = rho*((1/dt) * ((u[ip] - u[im]) / (2*dx) + (v[jp] - v[jm]) / (2*dy)) - pow(((u[ip]-u[im]) /\
-			(2*dx)), 2) - 2*(((u[jp] - u[jm]) / (2*dy)) * (v[jp] - v[im]) / (2*dx)) - pow(((v[jp] - v[jm]) / (2*dy)),2));
+			(2*dx)), 2) - 2*(((u[jp] - u[jm]) / (2*dy)) * (v[ip] - v[im]) / (2*dx)) - pow(((v[jp] - v[jm]) / (2*dy)),2));
         	}
 		__syncthreads();
 		
@@ -34,7 +34,7 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
                        p[i] = p[ny+i];
                        p[j*ny] = p[(j*ny)+1];
                        p[(ny * (nx-1))+i] = 0;
-                       
+                       __syncthreads(); 
 
                 }
 		un[ji] = u[ji];
@@ -60,10 +60,9 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
                 u[ny*(nx-1) + i] = 1.0;
                 v[i] = v[ny*(nx-1)+i] = v[j*ny] = v[j*ny + (ny-1)] = 0.0;
                 
-	//	printf("%f ", u[ji]);
+		if (blockIdx.x == 39) printf("%f ", v[ji]);
 
- 		__syncthreads();
-
+ 		
 //	}
                 
 }
