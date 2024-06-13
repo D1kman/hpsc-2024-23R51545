@@ -47,6 +47,7 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 */
 		if (i == nx-1) p[ji] = p[ji-1];
 		if (i == 0) p[ji] = p[ji+1];
+		grid.sync();
 		if (j == ny-1) p[ji] = 0.0;
 		if (j == 0) p[ji] = p[ji +ny];
 		grid.sync();
@@ -76,8 +77,9 @@ __global__ void cal(double *u, double *v, double *p, double *b, double *un, doub
 */
 	
 	if (j == 0 || j == ny-1 || i == 0 || i == nx-1) {
-		if (j == ny-1) u[ji] = 1.0;
-		else u[ji] = 0.0;
+		if (j != ny-1) u[ji] = 0.0;
+		
+		else u[ji] = 1.0;
 
 		v[ji] = 0.0;
 	}
